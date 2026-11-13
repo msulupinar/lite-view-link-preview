@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lite View ayarları</title>
+  <link rel="stylesheet" href="ui.css">
+</head>
+<body>
+  <main class="settings-card">
+    <header class="heading">
+      <img src="icons/lite-view-48.png" alt="" width="44" height="44">
+      <div><h1>Lite View</h1><p>Bağlantı önizleme ayarları</p></div>
+    </header>
+
+    <label class="choice">
+      <input id="enabled" type="checkbox">
+      <span><strong>Lite View'i etkinleştir</strong><small>Orta tıkla bağlantıları popup içinde aç.</small></span>
+    </label>
+
+    <fieldset id="scope-options">
+      <legend>Çalışacağı siteler</legend>
+      <label class="choice">
+        <input type="radio" name="scope" value="selected" checked>
+        <span><strong>Seçtiğim siteler</strong><small>Eklenti yalnızca aşağıdaki adreslerde çalışır.</small></span>
+      </label>
+      <label class="choice">
+        <input type="radio" name="scope" value="all">
+        <span><strong>Tüm web siteleri</strong><small>Chrome, tüm HTTP ve HTTPS sitelerinde çalışmasına izin ister.</small></span>
+      </label>
+      <label class="field-label" for="sites">Site adresleri</label>
+      <textarea id="sites" rows="5" placeholder="https://qrp.fine-food.com.tr&#10;https://example.com"></textarea>
+      <small class="help">Her satıra bir adres yaz. Yalnızca adresin alan adı kullanılır; yol ve sayfa içeriği saklanmaz.</small>
+    </fieldset>
+
+    <div class="actions">
+      <button id="save" class="primary" type="button">Ayarları kaydet</button>
+      <span id="status" role="status" aria-live="polite"></span>
+    </div>
+    <p class="privacy">Lite View ayarlarını yalnızca bu tarayıcıda saklar. Sayfa içeriği veya gezinme geçmişi toplanmaz ya da gönderilmez.</p>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>
