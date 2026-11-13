@@ -39,7 +39,7 @@
     const style = document.createElement('style');
     style.textContent = `
       :host{all:initial}.layer{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:3vh 3vw;background:rgba(12,24,22,.55);backdrop-filter:blur(5px);font-family:Inter,"Segoe UI",Arial,sans-serif}
-      .panel{width:min(1100px,86vw);height:min(880px,92vh);min-width:min(600px,94vw);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.8);border-radius:15px;background:#f7f9f8;box-shadow:0 26px 84px rgba(7,23,19,.34)}
+      .panel{width:min(1280px,90vw);height:min(880px,92vh);min-width:min(600px,94vw);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.8);border-radius:15px;background:#f7f9f8;box-shadow:0 26px 84px rgba(7,23,19,.34)}
       header{height:53px;flex:none;display:flex;align-items:center;gap:11px;padding:0 14px 0 17px;border-bottom:1px solid #e8eeeb;background:#fff}.mark{width:27px;height:27px;flex:none}.mark svg{width:100%;height:100%;display:block}.heading{min-width:0;flex:1}.name{display:block;overflow:hidden;color:#1b2927;font-size:12px;font-weight:650;text-overflow:ellipsis;white-space:nowrap}.hint{display:block;margin-top:2px;color:#87948e;font-size:9px}
       button{width:32px;height:32px;border:0;border-radius:8px;background:#f1f5f3;color:#687871;font:20px/1 Inter,"Segoe UI",Arial,sans-serif;cursor:pointer}button:hover{background:#e5eee9;color:#147c5c}iframe{width:100%;height:100%;min-height:0;flex:1;border:0;background:#fff}
       @media(max-width:640px){.layer{padding:12px}.panel{width:100%;height:100%;min-width:0;border-radius:11px}}
