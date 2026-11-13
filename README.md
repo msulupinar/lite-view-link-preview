@@ -19,7 +19,6 @@ External links keep their normal browser behavior. Preview navigation is limited
 3. Enable **Developer mode**.
 4. Select **Load unpacked** and choose the `lite-view-configurable-extension` folder.
 5. Open the extension's **Options** page and select the sites where it should run.
-6. Reload ERP tabs that were already open when you saved the settings.
 
 For selected sites, enter one origin per line, for example `https://example.com`. Only that origin is granted access. The extension asks Chrome for the relevant site permission when settings are saved. Choosing all websites requests access to all HTTP and HTTPS sites; Chrome displays this broader access request.
 
@@ -55,7 +54,7 @@ Dış bağlantılar tarayıcının normal davranışını sürdürür. Önizleme
 3. **Geliştirici modu**nu etkinleştir.
 4. **Paketlenmemiş öğe yükle** seçeneğine tıkla ve `lite-view-configurable-extension` klasörünü seç.
 5. Eklentinin **Seçenekler** sayfasını açıp çalışmasını istediğin siteleri belirle.
-6. Ayarları kaydettiğinde açık olan ERP sekmelerini yenile.
+
 
 Belirli siteleri seçerken her satıra bir adres yaz. Örneğin: `https://example.com`. Eklenti yalnızca bu adrese erişim izni ister. Ayarları kaydederken Chrome ilgili site iznini sorar. Tüm siteler seçeneği tüm HTTP ve HTTPS sitelerine erişim ister; Chrome bu geniş kapsamlı izin isteğini gösterir.
 
