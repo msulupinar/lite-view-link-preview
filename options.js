@@ -9,6 +9,7 @@ const scopeOptions = document.getElementById('scope-options');
 const siteList = document.getElementById('site-list');
 const defaultWidthInput = document.getElementById('default-width');
 const defaultHeightInput = document.getElementById('default-height');
+const nestedDefaultInput = document.getElementById('nested-default');
 const siteHelp = document.getElementById('site-help');
 const status = document.getElementById('status');
 const saveButton = document.getElementById('save');
@@ -20,8 +21,8 @@ function selectedScope() {
 function updateDisabledState() {
   scopeOptions.disabled = !enabledInput.checked;
   siteHelp.textContent = selectedScope() === 'all'
-    ? 'Tüm sitelerde varsayılan boyut kullanılır. Eklediğin adresler yalnızca o sitelere özel boyut uygular.'
-    : 'Her satırda bir site ve ona özel pencere boyutu bulunur. Boyutlar ekran alanına göre sınırlandırılır.';
+    ? 'Tüm sitelerde varsayılan boyut ve iç içe popup seçeneği kullanılır. Site satırları bu değerleri o site için değiştirir.'
+    : 'Her satırda site adresi, pencere boyutu ve iç içe popup seçeneği belirlenir.';
 }
 
 function addSiteRow(site = {}) {
@@ -45,12 +46,22 @@ function addSiteRow(site = {}) {
   height.value = site.height || defaultHeightInput.value || 880;
   height.setAttribute('aria-label', 'Popup yüksekliği piksel');
 
+  const nested = document.createElement('select');
+  nested.className = 'site-nested';
+  nested.setAttribute('aria-label', 'İç içe popup ayarı');
+  for (const [value, label] of [['default', 'Varsayılan'], ['on', 'Açık'], ['off', 'Kapalı']]) {
+    const option = document.createElement('option');
+    option.value = value; option.textContent = label;
+    nested.append(option);
+  }
+  nested.value = site.nestedPopup === true ? 'on' : site.nestedPopup === false ? 'off' : 'default';
+
   const remove = document.createElement('button');
   remove.type = 'button'; remove.className = 'remove-site'; remove.textContent = '×';
   remove.title = 'Siteyi kaldır'; remove.setAttribute('aria-label', 'Siteyi kaldır');
   remove.addEventListener('click', () => row.remove());
 
-  row.append(origin, width, height, remove);
+  row.append(origin, width, height, nested, remove);
   siteList.append(row);
 }
 
@@ -88,10 +99,12 @@ function readSites() {
     if (seen.has(origin)) throw new Error(`Bu site birden fazla eklenmiş: ${origin}`);
     seen.add(origin);
     const inputs = row.querySelectorAll('input[type="number"]');
+    const nestedValue = row.querySelector('.site-nested').value;
     sites.push({
       origin,
       width: readDimension(inputs[0], MIN_WIDTH, MAX_WIDTH, 'Popup genişliği'),
-      height: readDimension(inputs[1], MIN_HEIGHT, MAX_HEIGHT, 'Popup yüksekliği')
+      height: readDimension(inputs[1], MIN_HEIGHT, MAX_HEIGHT, 'Popup yüksekliği'),
+      nestedPopup: nestedValue === 'default' ? null : nestedValue === 'on'
     });
   }
   return sites;
@@ -118,6 +131,7 @@ async function loadSettings() {
   document.querySelector(`input[name="scope"][value="${settings.allSites ? 'all' : 'selected'}"]`).checked = true;
   defaultWidthInput.value = settings.defaultSize?.width || 1280;
   defaultHeightInput.value = settings.defaultSize?.height || 880;
+  nestedDefaultInput.checked = Boolean(settings.nestedPopupDefault);
 
   // Migrate the previous version's string-only site list without losing sites.
   const sites = (settings.sites || []).map(site => typeof site === 'string'
@@ -147,7 +161,7 @@ saveButton.addEventListener('click', async () => {
       throw new Error('Etkinleştirmek için en az bir site ekle.');
     }
 
-    const settings = { enabled, allSites, defaultSize, sites };
+    const settings = { enabled, allSites, defaultSize, nestedPopupDefault: nestedDefaultInput.checked, sites };
     const desiredOrigins = enabled ? patternsFor(settings) : [];
 
     // Request permissions directly from this click, as Chrome requires.

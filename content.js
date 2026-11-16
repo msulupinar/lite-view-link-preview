@@ -7,7 +7,44 @@
   const isHttpPage = location.protocol === 'http:' || location.protocol === 'https:';
   if (!isHttpPage) return;
 
-  const closePreview = () => document.getElementById('__lite_view_preview_host')?.remove();
+  let previewSettings = { sites: [], nestedPopupDefault: false };
+  const refreshSettings = () => chrome.storage.local.get('liteViewSettings').then(stored => {
+    previewSettings = stored.liteViewSettings || { sites: [], nestedPopupDefault: false };
+  }).catch(() => {});
+  void refreshSettings();
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && changes.liteViewSettings) {
+      previewSettings = changes.liteViewSettings.newValue || { sites: [], nestedPopupDefault: false };
+    }
+  });
+
+  function nestedPopupEnabled() {
+    const site = (previewSettings.sites || []).find(item =>
+      typeof item !== 'string' && item.origin === PAGE_ORIGIN);
+    if (site && typeof site.nestedPopup === 'boolean') return site.nestedPopup;
+    return Boolean(previewSettings.nestedPopupDefault);
+  }
+
+  function insideLiteViewPreview() {
+    let current = window;
+    while (current !== current.top) {
+      try {
+        if (current.parent.document.getElementById('__lite_view_preview_host')) return true;
+        current = current.parent;
+      } catch { return false; }
+    }
+    return false;
+  }
+
+  function canOpenPreviewHere() {
+    return window === window.top || (nestedPopupEnabled() && insideLiteViewPreview());
+  }
+
+  let activePreviewWindow = null;
+  const closePreview = () => {
+    document.getElementById('__lite_view_preview_host')?.remove();
+    activePreviewWindow = null;
+  };
   const isPdf = url => url.pathname.toLowerCase().endsWith('.pdf');
 
   function createLogo() {
@@ -74,22 +111,16 @@
     close.addEventListener('click', closePreview);
     const frame = document.createElement('iframe'); frame.title = title || 'Sayfa önizlemesi'; frame.src = target.href;
     frame.referrerPolicy = 'strict-origin-when-cross-origin';
+    activePreviewWindow = frame.contentWindow;
     bar.append(mark, heading, close); panel.append(bar, frame); layer.append(panel); shadow.append(style, layer);
     layer.addEventListener('mousedown', event => { if (event.target === layer) closePreview(); });
     document.documentElement.append(host);
 
-    // Escape inside a same-origin preview frame should close the outer popup.
-    frame.addEventListener('load', () => {
-      try {
-        frame.contentDocument.addEventListener('keydown', event => {
-          if (event.key === 'Escape') { closePreview(); event.stopPropagation(); }
-        }, true);
-      } catch { /* Cross-origin redirects remain isolated by the browser. */ }
-    });
   }
 
   document.addEventListener('auxclick', event => {
     if (event.button !== 1) return;
+    if (!canOpenPreviewHere()) return;
     const link = event.target?.closest?.('a[href]');
     if (!link) return;
     let target;
@@ -101,6 +132,7 @@
 
   document.addEventListener('click', event => {
     if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    if (!canOpenPreviewHere()) return;
     const link = event.target?.closest?.('a[href]');
     if (!link) return;
     let target;
@@ -112,6 +144,13 @@
 
   window.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
-    closePreview();
+    if (document.getElementById('__lite_view_preview_host')) closePreview();
+    else if (window !== window.top) window.parent.postMessage({ type: 'lite-view:close-preview' }, PAGE_ORIGIN);
   }, true);
+
+  window.addEventListener('message', event => {
+    if (event.origin !== PAGE_ORIGIN || event.source !== activePreviewWindow ||
+        event.data?.type !== 'lite-view:close-preview') return;
+    closePreview();
+  });
 })();

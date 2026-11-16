@@ -33,11 +33,12 @@
         <label for="default-width">Varsay&#305;lan geni&#351;lik (px)<input id="default-width" type="number" min="320" max="2400" step="10" value="1280"></label>
         <label for="default-height">Varsay&#305;lan y&#252;kseklik (px)<input id="default-height" type="number" min="240" max="1800" step="10" value="880"></label>
       </div>
-      <label class="field-label" id="sites-label">Site adresleri ve pencere boyutlar&#305;</label>
-      <div class="site-columns" aria-hidden="true"><span>Site adresi</span><span>Geni&#351;lik (px)</span><span>Y&#252;kseklik (px)</span><span></span></div>
+      <label class="choice nested-default"><input id="nested-default" type="checkbox"><span><strong>Varsay&#305;lan olarak i&#231; i&#231;e popup a&#231;</strong><small>Kapalıysa popup i&#231;indeki orta t&#305;k normal yeni sekme davran&#305;&#351;&#305;n&#305; s&#252;rd&#252;r&#252;r. Site sat&#305;r&#305;nda bu ayar&#305; de&#287;i&#351;tirebilirsin.</small></span></label>
+      <label class="field-label" id="sites-label">Site adresleri, pencere boyutlar&#305; ve i&#231; i&#231;e popup ayar&#305;</label>
+      <div class="site-columns" aria-hidden="true"><span>Site adresi</span><span>Geni&#351;lik (px)</span><span>Y&#252;kseklik (px)</span><span>&#304;&#231; i&#231;e popup</span><span></span></div>
       <div id="site-list" class="site-list"></div>
       <button id="add-site" class="secondary" type="button">+ Site ekle</button>
-      <small id="site-help" class="help">Her sat&#305;rda bir site ve ona &#246;zel pencere boyutu bulunur. Boyutlar, ekran alan&#305;na g&#246;re s&#305;n&#305;rland&#305;r&#305;l&#305;r.</small>
+      <small id="site-help" class="help">Her site sat&#305;r&#305;nda adres, popup boyutu ve i&#231; i&#231;e popup davran&#305;&#351;&#305; belirlenir.</small>
     </fieldset>
 
     <div class="actions">

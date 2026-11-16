@@ -23,7 +23,7 @@ async function syncContentScript() {
     matches,
     js: ['content.js'],
     runAt: 'document_start',
-    allFrames: false,
+    allFrames: true,
     persistAcrossSessions: true
   }]);
 }
