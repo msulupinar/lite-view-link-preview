@@ -3,41 +3,48 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lite View ayarları</title>
+  <title>Lite View ayarlar&#305;</title>
   <link rel="stylesheet" href="ui.css">
 </head>
 <body>
   <main class="settings-card">
     <header class="heading">
       <img src="icons/lite-view-48.png" alt="" width="44" height="44">
-      <div><h1>Lite View</h1><p>Bağlantı önizleme ayarları</p></div>
+      <div><h1>Lite View</h1><p>Ba&#287;lant&#305; &#246;nizleme ayarlar&#305;</p></div>
     </header>
 
     <label class="choice">
       <input id="enabled" type="checkbox">
-      <span><strong>Lite View'i etkinleştir</strong><small>Orta tıkla bağlantıları popup içinde aç.</small></span>
+      <span><strong>Lite View'i etkinle&#351;tir</strong><small>Orta t&#305;kla ba&#287;lant&#305;lar&#305; popup i&#231;inde a&#231;.</small></span>
     </label>
 
     <fieldset id="scope-options">
-      <legend>Çalışacağı siteler</legend>
+      <legend>&#199;al&#305;&#351;aca&#287;&#305; siteler</legend>
       <label class="choice">
         <input type="radio" name="scope" value="selected" checked>
-        <span><strong>Seçtiğim siteler</strong><small>Eklenti yalnızca aşağıdaki adreslerde çalışır.</small></span>
+        <span><strong>Se&#231;ti&#287;im siteler</strong><small>Eklenti a&#351;a&#287;&#305;daki adreslerde &#231;al&#305;&#351;&#305;r; her siteye ayr&#305; pencere boyutu verebilirsin.</small></span>
       </label>
       <label class="choice">
         <input type="radio" name="scope" value="all">
-        <span><strong>Tüm web siteleri</strong><small>Chrome, tüm HTTP ve HTTPS sitelerinde çalışmasına izin ister.</small></span>
+        <span><strong>T&#252;m web siteleri</strong><small>Chrome, t&#252;m HTTP ve HTTPS sitelerine eri&#351;im izni ister. &#304;stersen a&#351;a&#287;&#305;da siteye &#246;zel boyutlar da tan&#305;mlayabilirsin.</small></span>
       </label>
-      <label class="field-label" for="sites">Site adresleri</label>
-      <textarea id="sites" rows="5" placeholder="https://example.com"></textarea>
-      <small class="help">Her satıra bir adres yaz. Yalnızca adresin alan adı kullanılır; yol ve sayfa içeriği saklanmaz.</small>
+
+      <div class="size-defaults">
+        <label for="default-width">Varsay&#305;lan geni&#351;lik (px)<input id="default-width" type="number" min="320" max="2400" step="10" value="1280"></label>
+        <label for="default-height">Varsay&#305;lan y&#252;kseklik (px)<input id="default-height" type="number" min="240" max="1800" step="10" value="880"></label>
+      </div>
+      <label class="field-label" id="sites-label">Site adresleri ve pencere boyutlar&#305;</label>
+      <div class="site-columns" aria-hidden="true"><span>Site adresi</span><span>Geni&#351;lik (px)</span><span>Y&#252;kseklik (px)</span><span></span></div>
+      <div id="site-list" class="site-list"></div>
+      <button id="add-site" class="secondary" type="button">+ Site ekle</button>
+      <small id="site-help" class="help">Her sat&#305;rda bir site ve ona &#246;zel pencere boyutu bulunur. Boyutlar, ekran alan&#305;na g&#246;re s&#305;n&#305;rland&#305;r&#305;l&#305;r.</small>
     </fieldset>
 
     <div class="actions">
-      <button id="save" class="primary" type="button">Ayarları kaydet</button>
+      <button id="save" class="primary" type="button">Ayarlar&#305; kaydet</button>
       <span id="status" role="status" aria-live="polite"></span>
     </div>
-    <p class="privacy">Lite View ayarlarını yalnızca bu tarayıcıda saklar. Sayfa içeriği veya gezinme geçmişi toplanmaz ya da gönderilmez.</p>
+    <p class="privacy">Lite View ayarlar&#305;n&#305; yaln&#305;zca bu taray&#305;c&#305;da saklar. Sayfa i&#231;eri&#287;i veya gezinme ge&#231;mi&#351;i toplanmaz ya da g&#246;nderilmez.</p>
   </main>
   <script src="options.js"></script>
 </body>

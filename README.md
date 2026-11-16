@@ -5,6 +5,7 @@ Chrome and Edge extension that opens same-site links in an in-page preview when 
 ## Features
 
 - Choose specific HTTP/HTTPS sites, or explicitly enable all HTTP/HTTPS sites.
+- Set a default preview size and customize width and height separately for each site.
 - Middle-click a same-origin link to preview it without opening a tab.
 - Open same-origin PDF links in the preview with a normal click.
 - Close previews with Escape, the close button, or a click on the backdrop.

@@ -24,13 +24,28 @@
     return svg;
   }
 
-  function openPreview(rawUrl, title) {
+  async function openPreview(rawUrl, title) {
     let target;
     try { target = new URL(rawUrl, location.href); } catch { return; }
     // Preview only pages on the current origin. Never turn the iframe into an
     // arbitrary cross-site browser or allow URL user-info credentials.
     if (target.origin !== PAGE_ORIGIN || !isHttpPage || target.username || target.password) return;
     closePreview();
+
+    let siteSettings;
+    try {
+      const stored = await chrome.storage.local.get('liteViewSettings');
+      const settings = stored.liteViewSettings || {};
+      siteSettings = (settings.sites || []).find(site =>
+        (typeof site === 'string' ? site : site.origin) === PAGE_ORIGIN && typeof site !== 'string');
+      siteSettings ||= settings.defaultSize;
+    } catch { /* Use the built-in dimensions if settings cannot be read. */ }
+    const getDimension = (value, fallback, min, max) => {
+      const n = Number(value);
+      return Number.isInteger(n) && n >= min && n <= max ? n : fallback;
+    };
+    const width = getDimension(siteSettings?.width, 1280, 320, 2400);
+    const height = getDimension(siteSettings?.height, 880, 240, 1800);
 
     const host = document.createElement('div');
     host.id = '__lite_view_preview_host';
@@ -39,13 +54,16 @@
     const style = document.createElement('style');
     style.textContent = `
       :host{all:initial}.layer{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:3vh 3vw;background:rgba(12,24,22,.55);backdrop-filter:blur(5px);font-family:Inter,"Segoe UI",Arial,sans-serif}
-      .panel{width:min(1280px,90vw);height:min(880px,92vh);min-width:min(600px,94vw);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.8);border-radius:15px;background:#f7f9f8;box-shadow:0 26px 84px rgba(7,23,19,.34)}
+      .panel{width:min(var(--popup-width,1280px),90vw);height:min(var(--popup-height,880px),92vh);min-width:min(var(--popup-min-width,600px),94vw);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.8);border-radius:15px;background:#f7f9f8;box-shadow:0 26px 84px rgba(7,23,19,.34)}
       header{height:53px;flex:none;display:flex;align-items:center;gap:11px;padding:0 14px 0 17px;border-bottom:1px solid #e8eeeb;background:#fff}.mark{width:27px;height:27px;flex:none}.mark svg{width:100%;height:100%;display:block}.heading{min-width:0;flex:1}.name{display:block;overflow:hidden;color:#1b2927;font-size:12px;font-weight:650;text-overflow:ellipsis;white-space:nowrap}.hint{display:block;margin-top:2px;color:#87948e;font-size:9px}
       button{width:32px;height:32px;border:0;border-radius:8px;background:#f1f5f3;color:#687871;font:20px/1 Inter,"Segoe UI",Arial,sans-serif;cursor:pointer}button:hover{background:#e5eee9;color:#147c5c}iframe{width:100%;height:100%;min-height:0;flex:1;border:0;background:#fff}
       @media(max-width:640px){.layer{padding:12px}.panel{width:100%;height:100%;min-width:0;border-radius:11px}}
     `;
     const layer = document.createElement('div'); layer.className = 'layer';
     const panel = document.createElement('section'); panel.className = 'panel';
+    panel.style.setProperty('--popup-width', `${width}px`);
+    panel.style.setProperty('--popup-height', `${height}px`);
+    panel.style.setProperty('--popup-min-width', `${Math.min(width, 600)}px`);
     const bar = document.createElement('header');
     const mark = document.createElement('div'); mark.className = 'mark'; mark.append(createLogo());
     const heading = document.createElement('div'); heading.className = 'heading';

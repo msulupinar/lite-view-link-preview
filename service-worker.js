@@ -12,7 +12,7 @@ async function syncContentScript() {
   if (!settings?.enabled) return;
   const matches = settings.allSites
     ? ['http://*/*', 'https://*/*']
-    : (settings.sites || []).map(site => `${site}/*`);
+    : (settings.sites || []).map(site => `${typeof site === 'string' ? site : site.origin}/*`);
   if (!matches.length) return;
 
   const granted = await chrome.permissions.contains({ origins: matches });
