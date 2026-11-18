@@ -9,6 +9,7 @@ Chrome and Edge extension that opens same-site links in an in-page preview when 
 - Enable nested previews globally or override the setting for each site; middle-clicks inside an open preview can open another preview.
 - Middle-click a same-origin link to preview it without opening a tab.
 - Open same-origin PDF links in the preview with a normal click.
+- Optionally open a site menu with Back, Forward, and Open in preview on a middle-click.
 - Close previews with Escape, the close button, or a click on the backdrop.
 - Site selection is stored locally in the browser.
 
@@ -46,6 +47,7 @@ Orta fare tuşuyla tıklanan aynı siteye ait bağlantıları sayfa içi önizle
 - Belirli HTTP/HTTPS sitelerini seçebilir veya tüm HTTP/HTTPS sitelerinde çalışmasını etkinleştirebilirsin.
 - Aynı kaynaktaki bir bağlantıya orta tıklayarak yeni sekme açmadan önizleyebilirsin.
 - Aynı kaynaktaki PDF bağlantılarını normal tıklamayla önizlemede açabilirsin.
+- Site satırındaki **Orta tık menü** seçeneğiyle orta tuşa bir kez basınca Geri, İleri ve Önizlemede aç menüsünü etkinleştirebilirsin.
 - Önizlemeyi Esc tuşuyla, kapatma düğmesiyle veya arka plana tıklayarak kapatabilirsin.
 - Site seçimi tarayıcıda yerel olarak saklanır.
 

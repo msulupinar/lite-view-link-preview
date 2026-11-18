@@ -25,6 +25,12 @@
     return Boolean(previewSettings.nestedPopupDefault);
   }
 
+  function middleClickMenuEnabled() {
+    return (previewSettings.sites || []).some(site =>
+      typeof site !== 'string' && site.origin === PAGE_ORIGIN &&
+      (site.middleClickMenu === true || site.customContextMenu === true));
+  }
+
   function insideLiteViewPreview() {
     let current = window;
     while (current !== current.top) {
@@ -41,6 +47,7 @@
   }
 
   let activePreviewWindow = null;
+  let contextMenuHost = null;
   let lastWheelClickAt = 0;
   let suppressNextWheelAuxClick = false;
   const WHEEL_DOUBLE_CLICK_MS = 400;
@@ -49,6 +56,62 @@
     activePreviewWindow = null;
   };
   const isPdf = url => url.pathname.toLowerCase().endsWith('.pdf');
+
+  function closeContextMenu() {
+    contextMenuHost?.remove();
+    contextMenuHost = null;
+    window.removeEventListener('keydown', onContextMenuKey, true);
+    document.removeEventListener('pointerdown', onContextMenuOutside, true);
+  }
+
+  function showContextMenu(event) {
+    closeContextMenu();
+    const host = document.createElement('div');
+    host.style.cssText = 'all:initial;position:fixed;inset:0;z-index:2147483647;pointer-events:none';
+    const shadow = host.attachShadow({ mode: 'closed' });
+    const style = document.createElement('style');
+    style.textContent = `
+      .menu{position:fixed;min-width:190px;padding:5px;border:1px solid #dce5df;border-radius:10px;background:#fff;box-shadow:0 12px 36px rgba(15,35,26,.22);font:13px/1.4 Inter,"Segoe UI",Arial,sans-serif;color:#1b2927;pointer-events:auto}
+      button{display:block;width:100%;padding:9px 11px;border:0;border-radius:6px;background:transparent;text-align:left;color:inherit;font:inherit;cursor:pointer}button:hover{background:#edf5f0;color:#147c5c}button:disabled{color:#9aa59f;cursor:default}button:disabled:hover{background:transparent;color:#9aa59f}
+    `;
+    const menu = document.createElement('div');
+    menu.className = 'menu';
+    menu.setAttribute('role', 'menu');
+    const makeButton = (label, action, disabled = false) => {
+      const button = document.createElement('button');
+      button.type = 'button'; button.textContent = label; button.setAttribute('role', 'menuitem');
+      button.disabled = disabled;
+      button.addEventListener('click', () => { closeContextMenu(); action(); });
+      return button;
+    };
+    menu.append(
+      makeButton('Geri', () => window.history.back()),
+      makeButton('İleri', () => window.history.forward()),
+      makeButton('Önizlemede aç', () => {
+        const link = event.target?.closest?.('a[href]');
+        const url = link?.href || location.href;
+        const title = (link?.getAttribute('aria-label') || link?.title || link?.innerText || link?.textContent || '').trim();
+        void openPreview(url, title);
+      })
+    );
+    shadow.append(style, menu);
+    document.documentElement.append(host);
+    contextMenuHost = host;
+    const bounds = menu.getBoundingClientRect();
+    menu.style.left = `${Math.max(4, Math.min(event.clientX, window.innerWidth - bounds.width - 4))}px`;
+    menu.style.top = `${Math.max(4, Math.min(event.clientY, window.innerHeight - bounds.height - 4))}px`;
+    window.addEventListener('keydown', onContextMenuKey, true);
+    document.addEventListener('pointerdown', onContextMenuOutside, true);
+  }
+
+  function onContextMenuKey(event) {
+    if (event.key !== 'Escape') return;
+    closeContextMenu();
+  }
+
+  function onContextMenuOutside(event) {
+    if (contextMenuHost && !event.composedPath().includes(contextMenuHost)) closeContextMenu();
+  }
 
   function createLogo() {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -125,6 +188,10 @@
     if (event.button !== 1) return;
     // Chrome starts middle-button auto-scroll on mousedown, before auxclick.
     event.preventDefault();
+    if (middleClickMenuEnabled()) {
+      lastWheelClickAt = 0;
+      return;
+    }
     const now = performance.now();
     if (now - lastWheelClickAt <= WHEEL_DOUBLE_CLICK_MS) {
       lastWheelClickAt = 0;
@@ -137,6 +204,11 @@
 
   document.addEventListener('auxclick', event => {
     if (event.button !== 1) return;
+    if (middleClickMenuEnabled()) {
+      event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
+      showContextMenu(event);
+      return;
+    }
     if (suppressNextWheelAuxClick) {
       suppressNextWheelAuxClick = false;
       event.preventDefault();

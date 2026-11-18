@@ -56,12 +56,19 @@ function addSiteRow(site = {}) {
   }
   nested.value = site.nestedPopup === true ? 'on' : site.nestedPopup === false ? 'off' : 'default';
 
+  const contextMenu = document.createElement('input');
+  contextMenu.type = 'checkbox';
+  contextMenu.className = 'site-middle-click-menu';
+  contextMenu.checked = site.middleClickMenu === true || site.customContextMenu === true;
+  contextMenu.title = 'Orta tuş menüsünü etkinleştir';
+  contextMenu.setAttribute('aria-label', 'Orta tuş menüsünü etkinleştir');
+
   const remove = document.createElement('button');
   remove.type = 'button'; remove.className = 'remove-site'; remove.textContent = '×';
   remove.title = 'Siteyi kaldır'; remove.setAttribute('aria-label', 'Siteyi kaldır');
   remove.addEventListener('click', () => row.remove());
 
-  row.append(origin, width, height, nested, remove);
+  row.append(origin, width, height, nested, contextMenu, remove);
   siteList.append(row);
 }
 
@@ -104,7 +111,8 @@ function readSites() {
       origin,
       width: readDimension(inputs[0], MIN_WIDTH, MAX_WIDTH, 'Popup genişliği'),
       height: readDimension(inputs[1], MIN_HEIGHT, MAX_HEIGHT, 'Popup yüksekliği'),
-      nestedPopup: nestedValue === 'default' ? null : nestedValue === 'on'
+      nestedPopup: nestedValue === 'default' ? null : nestedValue === 'on',
+      middleClickMenu: row.querySelector('.site-middle-click-menu').checked
     });
   }
   return sites;
