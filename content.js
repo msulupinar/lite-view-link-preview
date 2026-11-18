@@ -41,6 +41,8 @@
   }
 
   let activePreviewWindow = null;
+  let lastWheelClickAt = 0;
+  const WHEEL_DOUBLE_CLICK_MS = 400;
   const closePreview = () => {
     document.getElementById('__lite_view_preview_host')?.remove();
     activePreviewWindow = null;
@@ -120,7 +122,20 @@
 
   document.addEventListener('auxclick', event => {
     if (event.button !== 1) return;
+
+    const now = performance.now();
+    if (now - lastWheelClickAt <= WHEEL_DOUBLE_CLICK_MS) {
+      lastWheelClickAt = 0;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      window.history.back();
+      return;
+    }
+    lastWheelClickAt = now;
+
     if (!canOpenPreviewHere()) return;
+
     const link = event.target?.closest?.('a[href]');
     if (!link) return;
     let target;
