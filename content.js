@@ -42,6 +42,7 @@
 
   let activePreviewWindow = null;
   let lastWheelClickAt = 0;
+  let suppressNextWheelAuxClick = false;
   const WHEEL_DOUBLE_CLICK_MS = 400;
   const closePreview = () => {
     document.getElementById('__lite_view_preview_host')?.remove();
@@ -120,20 +121,29 @@
 
   }
 
-  document.addEventListener('auxclick', event => {
+  document.addEventListener('mousedown', event => {
     if (event.button !== 1) return;
-
+    // Chrome starts middle-button auto-scroll on mousedown, before auxclick.
+    event.preventDefault();
     const now = performance.now();
     if (now - lastWheelClickAt <= WHEEL_DOUBLE_CLICK_MS) {
       lastWheelClickAt = 0;
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
+      suppressNextWheelAuxClick = true;
       window.history.back();
       return;
     }
     lastWheelClickAt = now;
+  }, true);
 
+  document.addEventListener('auxclick', event => {
+    if (event.button !== 1) return;
+    if (suppressNextWheelAuxClick) {
+      suppressNextWheelAuxClick = false;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      return;
+    }
     if (!canOpenPreviewHere()) return;
 
     const link = event.target?.closest?.('a[href]');
